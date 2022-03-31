@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import Bob from "./Rectangle 14.png"
+import Bob from "../Assets/Rectangle 14.png"
 
 export default function Header(){
     return(
@@ -11,7 +11,6 @@ export default function Header(){
         </>
     )
 }
-
 
 const Imagem = styled.img`
     width: 51px;

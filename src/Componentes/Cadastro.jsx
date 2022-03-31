@@ -1,32 +1,38 @@
 import styled from "styled-components"
-import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react"
+import {Link, useNavigate} from "react-router-dom"
+import {useState} from "react"
 import axios from "axios"
 import {ThreeDots} from "react-loader-spinner"
 
-export default function Login({ salvarToken }) {
-    const [senha, setSenha] = useState("");
+export default function Cadastro(){
     const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [nome, setNome] = useState("");
+    const [foto, setFoto] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    function fazerLogin(event) {
+    function fazerCadastro(event){
         event.preventDefault();
-        setLoading(true);
-        const promessa = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", {
-            email: email,
-            password: senha
-        })
-        promessa.then(resposta => {
-            console.log(resposta.status);
-            salvarToken(resposta.data.token);
-            navigate("/habitos");
-        })
-        promessa.catch(err => {
-            setLoading(false);
-            setSenha("");
-            setEmail("");
+        setLoading(true)
+        const promessa = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", {
+            email:email,
+            name:nome,
+            image:foto,
+            password:senha
+        });
+        promessa.then((resposta) => {
+            console.log(resposta);
+            navigate("/");
+        });
+        promessa.catch((err) => {
             console.log(err);
+            alert("Digite os campos corretamente!");
+            setEmail("");
+            setSenha("");
+            setNome("");
+            setFoto("");
+            setLoading(false);
         })
     }
 
@@ -36,20 +42,21 @@ export default function Login({ salvarToken }) {
                 <h1>TrackIt</h1>
             </Logotipo>
             <Credenciais>
-                <Formulario onSubmit={fazerLogin}>
-                    {!loading ? <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" /> : <InputCarregando type="email" value={email} disabled onChange={(e) => setEmail(e.target.value)} placeholder="email" /> }
-                    {!loading ? <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="senha" /> : <InputCarregando type="password" value={senha} disabled onChange={(e) => setSenha(e.target.value)} placeholder="senha" />}
+                <Formulario onSubmit={fazerCadastro}>
+                    {!loading ? <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" /> : <InputCarregando type="email" value={email} disabled onChange={(e) => setEmail(e.target.value)} placeholder="email" />}
+                    {!loading ? <input type="password" required value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="senha" /> : <InputCarregando type="password" disabled value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="senha" />}
+                    {!loading ? <input type="text" required value={nome} onChange={(e) => setNome(e.target.value)} placeholder="nome" /> : <InputCarregando type="text" disabled value={nome} onChange={(e) => setNome(e.target.value)} placeholder="nome" />}
+                    {!loading ? <input type="text" required value={foto} onChange={(e) => setFoto(e.target.value)} placeholder="foto" /> : <InputCarregando type="text" value={foto} onChange={(e) => setFoto(e.target.value)} placeholder="foto" />}
                     <Botao>
-                        {!loading ? <button type="submit"> <p>Entrar</p></button> : <BotaoCarregando disabled><ThreeDots color="#FFFFFF" height={30} width={100} /></BotaoCarregando>}
+                        {!loading ? <button type="submit"> <p>Cadastrar</p></button> : <BotaoCarregando disabled><ThreeDots color="#FFFFFF" height={30} width={100} /></BotaoCarregando>}
                     </Botao>
                 </Formulario>
             </Credenciais>
             <Cadastrar>
-                <Link to="/cadastro">
-                    <p>Não tem uma conta? Cadastre-se!</p>
+                <Link to="/">
+                    <p>Já tem uma conta? Faça login!</p>
                 </Link>
             </Cadastrar>
-
         </>
     )
 }
@@ -143,7 +150,6 @@ const BotaoCarregando = styled.button`
     outline: none;
     opacity: 0.7;
 
-    }
 `
 
 const InputCarregando = styled.input`
