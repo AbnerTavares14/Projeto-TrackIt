@@ -1,23 +1,24 @@
 import reactDOM from "react-dom";
-import TelaLogin from "./TelaLogin";
+import Login from "./Login";
 // import "./reset.css"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Cadastro from "./Cadastro";
 import Habitos from "./Habitos";
 import GlobalStyle from "./GlobalStyle";
-import Header from "./Header";
+import {useState} from "react"
 
 
 function App(){
+    const [token, setToken] = useState(null);
+
     return(
         <>
             <BrowserRouter>
-            <Header />
             <GlobalStyle />
                 <Routes>
-                    <Route path="/" element={<TelaLogin />} />
+                    <Route path="/" element={<Login salvarToken={(token) => setToken(token)} />} />
                     <Route path="/cadastro" element={<Cadastro />} />
-                    <Route path="/habitos" element={<Habitos />} />
+                    <Route path="/habitos" element={<Habitos token={token} />} />
                 </Routes>
             </BrowserRouter>
         </>

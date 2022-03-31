@@ -1,28 +1,29 @@
 import styled from "styled-components"
-import {Link, useNavigate} from "react-router-dom"
-import {useState} from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
 import axios from "axios"
+import {ThreeDots} from "react-loader-spinner"
 
-export default function TelaLogin() {
+export default function Login({ salvarToken }) {
     const [senha, setSenha] = useState("");
     const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    function fazerLogin(event){
-        event.preventDefault();
-        
-        // const token = Buffer.from(`${email}:${senha}`, 'utf8').toString('base64')
 
-        console.log(email)
-        console.log(senha)
+    function fazerLogin(event) {
+        event.preventDefault();
+        setLoading(true);
         const promessa = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", {
-            email:email,
-            password:senha
+            email: email,
+            password: senha
         })
         promessa.then(resposta => {
             console.log(resposta.status);
+            salvarToken(resposta.data.token);
             navigate("/habitos");
         })
         promessa.catch(err => {
+            setLoading(false);
             setSenha("");
             setEmail("");
             console.log(err);
@@ -36,10 +37,10 @@ export default function TelaLogin() {
             </Logotipo>
             <Credenciais>
                 <Formulario onSubmit={fazerLogin}>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
-                    <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="senha" />
+                    {!loading ? <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" /> : <InputCarregando type="email" value={email} disabled onChange={(e) => setEmail(e.target.value)} placeholder="email" /> }
+                    {!loading ? <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="senha" /> : <InputCarregando type="password" value={senha} disabled onChange={(e) => setSenha(e.target.value)} placeholder="senha" />}
                     <Botao>
-                        <button type="submit"> <p>Entrar</p></button>
+                        {!loading ? <button type="submit"> <p>Entrar</p></button> : <BotaoCarregando disabled><ThreeDots color="#FFFFFF" height={30} width={100} /></BotaoCarregando>}
                     </Botao>
                 </Formulario>
             </Credenciais>
@@ -48,7 +49,7 @@ export default function TelaLogin() {
                     <p>Não tem uma conta? Cadastre-se!</p>
                 </Link>
             </Cadastrar>
-        
+
         </>
     )
 }
@@ -127,4 +128,30 @@ const Cadastrar = styled.div`
         color: #52B6FF;
         text-decoration-line: underline;
     }
+`
+
+const BotaoCarregando = styled.button`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6px;
+    width: 308px;
+    height: 45px;
+    background-color: #52B6FF;
+    border-radius: 4.64px;
+    border: 0 none;
+    outline: none;
+    opacity: 0.7;
+
+    }
+`
+
+const InputCarregando = styled.input`
+    background-color: #F2F2F2;
+    box-sizing: border-box;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #D4D4D4;
+    width: 303px;
+    height: 45px;
 `
