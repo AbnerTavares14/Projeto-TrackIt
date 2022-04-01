@@ -1,12 +1,16 @@
 import styled from "styled-components"
-import Bob from "../Assets/Rectangle 14.png"
+// import Bob from "../Assets/Rectangle 14.png"
+import { useContext } from "react"
+import FotoContext from "../Contexts/FotoContext"
 
 export default function Header(){
+    const {foto} = useContext(FotoContext);
+
     return(
         <>
             <Topo>
                 <h1>TrackIt</h1>
-                <Imagem src={Bob} />
+                <Imagem src={foto} />
             </Topo>
         </>
     )

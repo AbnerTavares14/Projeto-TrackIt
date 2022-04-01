@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import axios from "axios"
 import {ThreeDots} from "react-loader-spinner"
-import TokenContext from "./TokenContext"
+import TokenContext from "../Contexts/TokenContext"
 import { useContext } from "react"
+import FotoContext from "../Contexts/FotoContext"
 
 export default function Login() {
     const [senha, setSenha] = useState("");
@@ -12,6 +13,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {setToken} = useContext(TokenContext);
+    const {setFoto} = useContext(FotoContext);
 
     function fazerLogin(event) {
         event.preventDefault();
@@ -23,7 +25,8 @@ export default function Login() {
         promessa.then(resposta => {
             console.log(resposta.status);
             setToken(resposta.data.token);
-            navigate("/habitos");
+            navigate("/hoje");
+            setFoto(resposta.data.image);
         })
         promessa.catch(err => {
             alert("Credenciais incorretas! Por favor, digite novamente!")

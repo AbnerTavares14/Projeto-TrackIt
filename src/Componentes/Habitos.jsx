@@ -1,15 +1,17 @@
-import { useState, useEffect, useContext } from "react"
-import axios from "axios"
-import styled from "styled-components"
-import Header from "./Header"
-import TokenContext from "./TokenContext"
-import Dia from "./Dia"
-import {ThreeDots} from "react-loader-spinner"
-import Footer from "./Footer"
+import { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import styled from "styled-components";
+import Header from "./Header";
+import TokenContext from "../Contexts/TokenContext";
+import Dia from "./Dia";
+import {ThreeDots} from "react-loader-spinner";
+import Footer from "./Footer";
+import PorcentagemContext from "../Contexts/Porcentagem";
 
 
 export default function Habitos() {
     const [habitos, setHabitos] = useState([]);
+    const {numeroHabitos, setNumeroHabitos} = useContext(PorcentagemContext);
     const [nome, setNome] = useState("");
     const [add, setAdd] = useState(false);
     const { token } = useContext(TokenContext);
@@ -17,6 +19,8 @@ export default function Habitos() {
     // const [days, setDays] = useState([]);
     const [dias, setDias] = useState([]);
     const [loading, setLoading] = useState(false);
+
+
     function armazenaDias(indice) {
         if (!dias.includes(indice)) {
             setDias([...dias, indice]);
@@ -43,6 +47,7 @@ export default function Habitos() {
             setHabitos([...habitos,resposta.data]);
             setNome("");
             setAdd(false);
+            setNumeroHabitos(numeroHabitos + 1);
             setLoading(false);
         });
         promessa.catch(err => {
@@ -64,9 +69,29 @@ export default function Habitos() {
         const promise = axios.get(URL, config);
         promise.then(resposta => {
             setHabitos(resposta.data);
+            setNumeroHabitos(habitos.length);
             // setDays(resposta.data);
         })
-    }, [token]);
+    }, [token,habitos.length]);
+
+    function excluirHabito(id){
+        const atualizaHabitos = habitos.filter(habito => {
+            if(habito.id !== id){
+                return habito;
+            }
+        })
+        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        const exclui = axios.delete(URL, config);
+        exclui.then(resposta => {
+            setHabitos([...atualizaHabitos]);
+            setNumeroHabitos(numeroHabitos - 1);
+        })
+    }
 
 
     if (habitos.length === 0) {
@@ -81,7 +106,7 @@ export default function Habitos() {
                     <Aviso><p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p></Aviso>
                     <Espaço />
                 </Body>
-                <Footer />
+                    <Footer />
             </>
         )
             :
@@ -108,7 +133,7 @@ export default function Habitos() {
                         <Aviso><p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p></Aviso>
                         <Espaço />
                     </Body>
-                    <Footer />
+                        <Footer />
                 </>
             )
     } else {
@@ -125,7 +150,7 @@ export default function Habitos() {
                             <>
                                 <div className="texto">
                                     <p>{habito.name}</p>
-                                    <ion-icon name="trash-outline"></ion-icon>
+                                    <ion-icon onClick={() => excluirHabito(habito.id)} name="trash-outline"></ion-icon>
                                 </div>
                                 <ContainerDias>
                                     {semana.map((dia, indice) => {
@@ -146,7 +171,7 @@ export default function Habitos() {
                     )}
                     <Espaço />
                 </Body>
-                <Footer />
+                    <Footer />
             </>
         )
             :
@@ -196,7 +221,7 @@ export default function Habitos() {
                         )}
                         <Espaço />
                     </Body>
-                    <Footer />
+                        <Footer />
                 </>
             )
     }
