@@ -57,7 +57,6 @@ export default function Footer() {
                                     // Text size
                                     fontSize: '17.98px',
                                     fontFamily: 'Lexend Deca, sans-serif',
-                                    padding: '40',
                                 },
                                 // Customize background - only used when the `background` prop is true
                                 background: {

@@ -5,7 +5,7 @@ import PorcentagemContext from "../Contexts/Porcentagem";
 import { useContext } from "react";
 
 export default function Historico(){
-    const {numeroHabitos} = useContext(PorcentagemContext);
+    // const {numeroHabitos} = useContext(PorcentagemContext);
     return (
         <>
             <Header />
