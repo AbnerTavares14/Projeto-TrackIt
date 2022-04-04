@@ -3,17 +3,17 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import axios from "axios"
 import {ThreeDots} from "react-loader-spinner"
-import TokenContext from "../Contexts/TokenContext"
+import UserContext from "../Contexts/UserContext"
 import { useContext } from "react"
-import FotoContext from "../Contexts/FotoContext"
+import Logo from "../Assets/logo-trackit.png"
 
 export default function Login() {
     const [senha, setSenha] = useState("");
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const {setToken} = useContext(TokenContext);
-    const {setFoto} = useContext(FotoContext);
+    const {setToken} = useContext(UserContext);
+    const {setFoto} = useContext(UserContext);
 
     function fazerLogin(event) {
         event.preventDefault();
@@ -40,6 +40,7 @@ export default function Login() {
     return (
         <>
             <Logotipo>
+                <img src={Logo} alt="" />
                 <h1>TrackIt</h1>
             </Logotipo>
             <Credenciais>
@@ -62,6 +63,16 @@ export default function Login() {
 }
 
 const Logotipo = styled.div`
+    display: flex;
+    margin-top: 50px;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    img{
+        width: 181px;
+        height: 100px;
+    }
+
     h1 {
         font-family: 'Playball', cursive;
         font-size: 68.98px;

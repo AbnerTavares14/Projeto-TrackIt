@@ -1,92 +1,62 @@
 import Header from "./Header"
 import Footer from "./Footer"
 import { useState, useEffect, useContext } from "react";
-import TokenContext from "../Contexts/TokenContext";
+import UserContext from "../Contexts/UserContext";
 import axios from "axios";
 import * as dayjs from 'dayjs'
 import 'dayjs/locale/pt-br'
 import styled from "styled-components"
 import DiaDaSemana from "./DiaDaSemana";
 import Check from "./Check";
-import PorcentagemContext from "../Contexts/Porcentagem";
 
 export default function Hoje() {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     const [habitos, setHabitos] = useState([]);
     const [concluidos, setConcluidos] = useState([]);
-    const [qtdHabitos, setQtdHabitos] = useState(0);
-    const {porcentagem,setPorcentagem} = useContext(PorcentagemContext);
+    const { porcentagem, setPorcentagem } = useContext(UserContext);
+    const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
 
+    function atualizaOProgresso(quantidadeDeHabitos) {
+        console.log(quantidadeDeHabitos);
+        if (quantidadeDeHabitos.length > 0) {
+            console.log('entrei');
+            const newArr = quantidadeDeHabitos.filter(habito => habito.done !== false).map(habito => habito.id);
+            setConcluidos([...newArr]);
+            console.log(concluidos);
+            let percent = (((newArr.length) / quantidadeDeHabitos.length) * 100).toFixed();
+            setPorcentagem(percent);
+        }
+    }
 
     useEffect(() => {
-        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
         const promise = axios.get(URL, config);
         promise.then(resposta => {
             setHabitos(resposta.data);
-            setQtdHabitos(habitos.length);
-            const newArr = resposta.data.filter(habito => habito.done === true).map(habito => habito.id)
-            setConcluidos([...newArr]);
+            atualizaOProgresso(resposta.data);
         });
         promise.catch(err => {
             console.log(err.statusText);
         })
-    }, [habitos.length]);
+    }, []);
 
-    function concluido(id) {
-        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/check`;
-        const URL2 = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        const promessa = axios.post(URL, { id: id }, config);
-        promessa.then(() => {
-            const promise = axios.get(URL2, config);
-            promise.then((resposta) => {
-                setHabitos(resposta.data);
-                setConcluidos([...concluidos, id]);
-            })
+
+    function atualizaHabitos() {
+        const novaPromessa = axios.get(URL, config);
+        novaPromessa.then(resposta => {
+            setHabitos(resposta.data);
+            const newArr = resposta.data.filter(habito => habito.done === true).map(habito => habito.id)
+            setConcluidos([...newArr]);
+            atualizaOProgresso(resposta.data);
         });
-        promessa.catch(err => {
-            console.log(err)
+        novaPromessa.catch(err => {
+            console.log(err);
         })
     }
-
-    function desmarcar(id) {
-        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/uncheck`;
-        const URL2 = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today";
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        const promessa = axios.post(URL, { id: id }, config);
-        promessa.then(() => {
-            const promise = axios.get(URL2, config);
-            promise.then((resposta) => {
-                setHabitos(resposta.data);
-                const newArr = concluidos.filter(conc => {
-                    if(conc !== id){
-                        return conc;
-                    }
-                });
-                console.log(newArr)
-                setConcluidos([...newArr]);
-            });
-            promessa.catch(err => {
-                console.log(err)
-            })
-        })
-    }
-
-    let porcent = ((concluidos.length) * 100) / qtdHabitos;
-    setPorcentagem(porcent);
 
     if (concluidos.length === 0) {
         return (
@@ -99,14 +69,21 @@ export default function Hoje() {
                     </Texto>
                     {habitos.map(habito =>
                         <Habito key={habito.id}>
-                            <Textos>
+                            {habito.currentSequence !== habito.highestSequence ? <Textos>
                                 <h1>{habito.name}</h1>
                                 <h2>Sequência atual: {habito.currentSequence} dias</h2>
                                 <h2>Seu recorde: {habito.highestSequence} dias</h2>
-                            </Textos>
-                            <Check concluido={() => { concluido(habito.id) }} desmarcar={() => desmarcar(habito.id)} id={habito.id} done={habito.done} />
+                            </Textos> :
+                                <SequenciaIgual>
+                                    <h1>{habito.name}</h1>
+                                    <h2>Sequência atual: {habito.currentSequence} dias</h2>
+                                    <h2>Seu recorde: {habito.highestSequence} dias</h2>
+                                </SequenciaIgual>
+                            }
+                            <Check config={config} atualizaHabitos={() => atualizaHabitos()} id={habito.id} done={habito.done} />
                         </Habito>
                     )}
+                    <Espaço />
                 </Body>
                 <Footer />
             </>
@@ -118,22 +95,22 @@ export default function Hoje() {
                 <Body>
                     <DiaDaSemana dia={dayjs().day()} data={dayjs().date()} Mes={dayjs().month()} />
                     <TextoPorcentagem>
-                        <h1>{porcentagem.toFixed()}% dos hábitos concluídos</h1>
+                        <h1>{porcentagem}% dos hábitos concluídos</h1>
                     </TextoPorcentagem>
                     {habitos.map(habito =>
                         <Habito key={habito.id} >
                             {habito.currentSequence !== habito.highestSequence ? <Textos>
-                                <h1>{habito.name}</h1> 
+                                <h1>{habito.name}</h1>
                                 <h2>Sequência atual: {habito.currentSequence} dias</h2>
                                 <h2>Seu recorde: {habito.highestSequence} dias</h2>
-                            </Textos> : 
-                            <SequenciaIgual>
-                                <h1>{habito.name}</h1> 
-                                <h2>Sequência atual: {habito.currentSequence} dias</h2>
-                                <h2>Seu recorde: {habito.highestSequence} dias</h2>
-                            </SequenciaIgual>
+                            </Textos> :
+                                <SequenciaIgual>
+                                    <h1>{habito.name}</h1>
+                                    <h2>Sequência atual: {habito.currentSequence} dias</h2>
+                                    <h2>Seu recorde: {habito.highestSequence} dias</h2>
+                                </SequenciaIgual>
                             }
-                            <Check concluido={() => { concluido(habito.id) }} desmarcar={() => desmarcar(habito.id)} id={habito.id} done={habito.done} />
+                            <Check config={config} atualizaHabitos={() => atualizaHabitos()} id={habito.id} done={habito.done} />
                         </Habito>
                     )}
                     <Espaço />

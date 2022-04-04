@@ -1,11 +1,9 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import styled from "styled-components"
-import PorcentagemContext from "../Contexts/Porcentagem";
-import { useContext } from "react";
+
 
 export default function Historico(){
-    // const {numeroHabitos} = useContext(PorcentagemContext);
     return (
         <>
             <Header />

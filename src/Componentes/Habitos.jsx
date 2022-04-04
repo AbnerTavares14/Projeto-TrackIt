@@ -2,18 +2,17 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import Header from "./Header";
-import TokenContext from "../Contexts/TokenContext";
+import UserContext from "../Contexts/UserContext";
 import Dia from "./Dia";
-import {ThreeDots} from "react-loader-spinner";
+import { ThreeDots } from "react-loader-spinner";
 import Footer from "./Footer";
-import PorcentagemContext from "../Contexts/Porcentagem";
 
 
 export default function Habitos() {
     const [habitos, setHabitos] = useState([]);
     const [nome, setNome] = useState("");
     const [add, setAdd] = useState(false);
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     const semana = ["D", "S", "T", "Q", "Q", "S", "S"];
     const [dias, setDias] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -28,31 +27,37 @@ export default function Habitos() {
         }
     }
 
+
     function criarHabito(event) {
         event.preventDefault();
-        setLoading(true);
-        const config1 = {
-            headers: {
-                Authorization: `Bearer ${token}`
+        if(dias.length > 0){
+            setLoading(true);
+            const config1 = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             }
+            const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+            const promessa = axios.post(URL, {
+                name: nome,
+                days: dias
+            }, config1);
+            promessa.then(resposta => {
+                setHabitos([...habitos, resposta.data]);
+                setNome("");
+                setAdd(false);
+                setLoading(false);
+                setDias([]);
+            });
+            promessa.catch(err => {
+                setNome("");
+                console.log(err.statusText);
+                alert("Preencha os campos corretamente!");
+                setLoading(false);
+            })
+        } else {
+            alert("Preencha os dias da semana que irá praticar o hábito!");
         }
-        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
-        const promessa = axios.post(URL, {
-            name: nome,
-            days: dias
-        }, config1);
-        promessa.then(resposta => {
-            setHabitos([...habitos,resposta.data]);
-            setNome("");
-            setAdd(false);
-            setLoading(false);
-        });
-        promessa.catch(err => {
-            setNome("");
-            console.log(err.statusText);
-            alert("Preencha os campos corretamente!");
-            setLoading(false);
-        })
     }
 
     useEffect(() => {
@@ -67,24 +72,26 @@ export default function Habitos() {
         promise.then(resposta => {
             setHabitos(resposta.data);
         })
-    }, [token,habitos.length]);
+    }, [token]);
 
-    function excluirHabito(id){
-        const atualizaHabitos = habitos.filter(habito => {
-            if(habito.id !== id){
-                return habito;
+    function excluirHabito(id) {
+        if (window.confirm("Tem certeza?")) {
+            const atualizaHabitos = habitos.filter(habito => {
+                if (habito.id !== id) {
+                    return habito;
+                }
+            })
+            const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             }
-        })
-        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            const exclui = axios.delete(URL, config);
+            exclui.then(() => {
+                setHabitos([...atualizaHabitos]);
+            })
         }
-        const exclui = axios.delete(URL, config);
-        exclui.then(resposta => {
-            setHabitos([...atualizaHabitos]);
-        })
     }
 
 
@@ -100,7 +107,7 @@ export default function Habitos() {
                     <Aviso><p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p></Aviso>
                     <Espaço />
                 </Body>
-                    <Footer />
+                <Footer />
             </>
         )
             :
@@ -114,10 +121,9 @@ export default function Habitos() {
                         </MeusHabitos>
                         <Container>
                             <form onSubmit={criarHabito}>
-                                {!loading ? <input value={nome} onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> : <input value={nome} disabled onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> }
+                                {!loading ? <input value={nome} onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> : <input value={nome} disabled onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" />}
                                 <ContainerDivs>
-                                    {semana.map((dia, indice) =>
-                                        { return !loading ? <Dia key={indice} i={indice} armazenaDia={(i) => armazenaDias(i)} dia={dia} /> : <Dia disabled key={indice} i={indice} armazenaDia={(i) => armazenaDias(i)} dia={dia} />}
+                                    {semana.map((dia, indice) => { return !loading ? <Dia key={indice} i={indice} armazenaDia={(i) => armazenaDias(i)} dia={dia} /> : <Dia disabled key={indice} i={indice} armazenaDia={(i) => armazenaDias(i)} dia={dia} /> }
                                     )}
                                 </ContainerDivs>
                                 {!loading ? <Cancelar onClick={() => setAdd(false)}><p>Cancelar</p></Cancelar> : <Cancelar disabled><p>Cancelar</p></Cancelar>}
@@ -127,7 +133,7 @@ export default function Habitos() {
                         <Aviso><p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p></Aviso>
                         <Espaço />
                     </Body>
-                        <Footer />
+                    <Footer />
                 </>
             )
     } else {
@@ -165,7 +171,7 @@ export default function Habitos() {
                     )}
                     <Espaço />
                 </Body>
-                    <Footer />
+                <Footer />
             </>
         )
             :
@@ -179,7 +185,7 @@ export default function Habitos() {
                         </MeusHabitos>
                         <Container>
                             <form onSubmit={criarHabito}>
-                                {!loading ? <input value={nome} onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> : <input value={nome} disabled onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> }
+                                {!loading ? <input value={nome} onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" /> : <input value={nome} disabled onChange={(e) => setNome(e.target.value)} type="text" placeholder="nome do hábito" />}
                                 <ContainerDivs>
                                     {semana.map((dia, indice) =>
                                         <Dia key={indice} i={indice} armazenaDia={(i) => armazenaDias(i)} dia={dia} />
@@ -190,7 +196,7 @@ export default function Habitos() {
                             </form>
                         </Container>
                         {habitos.map(habito =>
-                            <Habito>
+                            <Habito key={habito.id}>
                                 <>
                                     <div className="texto">
                                         <p>{habito.name}</p>
@@ -200,11 +206,11 @@ export default function Habitos() {
                                         {semana.map((dia, indice) => {
                                             if (habito.days.includes(indice)) {
                                                 return (
-                                                    <Cinza><p>{dia}</p></Cinza>
+                                                    <Cinza key={dia + indice}><p>{dia}</p></Cinza>
                                                 )
                                             } else {
                                                 return (
-                                                    <Branco><p>{dia}</p></Branco>
+                                                    <Branco key={dia + indice}><p>{dia}</p></Branco>
                                                 )
                                             }
                                         }
@@ -215,7 +221,7 @@ export default function Habitos() {
                         )}
                         <Espaço />
                     </Body>
-                        <Footer />
+                    <Footer />
                 </>
             )
     }

@@ -6,11 +6,9 @@ import Cadastro from "./Componentes/Cadastro";
 import Habitos from "./Componentes/Habitos";
 import GlobalStyle from "./GlobalStyle";
 import { useState } from "react"
-import TokenContext from "./Contexts/TokenContext";
+import UserContext from "./Contexts/UserContext";
 import Hoje from "./Componentes/Hoje";
-import FotoContext from "./Contexts/FotoContext";
 import Historico from "./Componentes/Historico";
-import PorcentagemContext from "./Contexts/Porcentagem";
 
 
 function App() {
@@ -22,19 +20,15 @@ function App() {
         <>
             <BrowserRouter>
                 <GlobalStyle />
-                <TokenContext.Provider value={{ token, setToken }}>
-                    <FotoContext.Provider value={{ foto, setFoto }}>
-                        <PorcentagemContext.Provider value={{ porcentagem, setPorcentagem }}>
-                            <Routes>
-                                <Route path="/" element={<Login salvarToken={(token) => setToken(token)} />} />
-                                <Route path="/cadastro" element={<Cadastro />} />
-                                <Route path="/hoje" element={<Hoje />} />
-                                <Route path="/habitos" element={<Habitos />} />
-                                <Route path="/historico" element={<Historico />} />
-                            </Routes>
-                        </PorcentagemContext.Provider>
-                    </FotoContext.Provider>
-                </TokenContext.Provider>
+                <UserContext.Provider value={{ token, setToken, foto, setFoto, porcentagem, setPorcentagem }}>
+                    <Routes>
+                        <Route path="/" element={<Login />} />
+                        <Route path="/cadastro" element={<Cadastro />} />
+                        <Route path="/hoje" element={<Hoje />} />
+                        <Route path="/habitos" element={<Habitos />} />
+                        <Route path="/historico" element={<Historico />} />
+                    </Routes>
+                </UserContext.Provider>
             </BrowserRouter>
         </>
     )

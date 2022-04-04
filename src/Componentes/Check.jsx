@@ -1,14 +1,19 @@
-import {useState} from "react";
 import styled from "styled-components"
+import axios from "axios"
 
 export default function Check(props){
-    const {concluido, id, done, desmarcar } = props;
-    // const [check, setCheck] = useState(false);
-    // setCheck(done);
+    const {id, done, atualizaHabitos, config } = props;
+    function mudaCheck(id,tipo){
+        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/${tipo}`;
+        const promise = axios.post(URL,{}, config);
+        promise.then(() => {
+            atualizaHabitos();
+        })
+    }
 
     return !done ? (
         <CheckOff onClick={() => { 
-            concluido(id);
+            mudaCheck(id,'check');
             }}>
             <ion-icon name="checkmark-outline"></ion-icon>
         </CheckOff>
@@ -16,7 +21,7 @@ export default function Check(props){
     :
     (
         <Checked onClick={() => { 
-            desmarcar(id);
+            mudaCheck(id,'uncheck');
             }}>
             <ion-icon name="checkmark-outline"></ion-icon>
         </Checked>

@@ -1,10 +1,11 @@
 import styled from "styled-components"
-import {Link, useNavigate} from "react-router-dom"
-import {useState} from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
 import axios from "axios"
-import {ThreeDots} from "react-loader-spinner"
+import { ThreeDots } from "react-loader-spinner"
+import Logo from "../Assets/logo-trackit.png"
 
-export default function Cadastro(){
+export default function Cadastro() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [nome, setNome] = useState("");
@@ -12,14 +13,14 @@ export default function Cadastro(){
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    function fazerCadastro(event){
+    function fazerCadastro(event) {
         event.preventDefault();
         setLoading(true)
         const promessa = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", {
-            email:email,
-            name:nome,
-            image:foto,
-            password:senha
+            email: email,
+            name: nome,
+            image: foto,
+            password: senha
         });
         promessa.then((resposta) => {
             console.log(resposta);
@@ -39,6 +40,7 @@ export default function Cadastro(){
     return (
         <>
             <Logotipo>
+                <img src={Logo} alt="" />
                 <h1>TrackIt</h1>
             </Logotipo>
             <Credenciais>
@@ -62,6 +64,16 @@ export default function Cadastro(){
 }
 
 const Logotipo = styled.div`
+
+    display: flex;
+    margin-top: 50px;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    img{
+        width: 181px;
+        height: 100px;
+    }
     h1 {
         font-family: 'Playball', cursive;
         font-size: 68.98px;

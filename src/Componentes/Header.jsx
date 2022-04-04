@@ -1,10 +1,10 @@
 import styled from "styled-components"
 // import Bob from "../Assets/Rectangle 14.png"
 import { useContext } from "react"
-import FotoContext from "../Contexts/FotoContext"
+import UserContext from "../Contexts/UserContext"
 
 export default function Header(){
-    const {foto} = useContext(FotoContext);
+    const {foto} = useContext(UserContext);
 
     return(
         <>
