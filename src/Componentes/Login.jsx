@@ -23,7 +23,7 @@ export default function Login() {
             password: senha
         })
         promessa.then(resposta => {
-            console.log(resposta.status);
+            // console.log(resposta.status);
             setToken(resposta.data.token);
             navigate("/hoje");
             setFoto(resposta.data.image);

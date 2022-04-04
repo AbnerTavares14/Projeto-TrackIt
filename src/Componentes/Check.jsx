@@ -1,8 +1,11 @@
-// import {useState} from "react";
+import {useState} from "react";
 import styled from "styled-components"
 
 export default function Check(props){
-    const {concluido, id, done } = props;
+    const {concluido, id, done, desmarcar } = props;
+    // const [check, setCheck] = useState(false);
+    // setCheck(done);
+
     return !done ? (
         <CheckOff onClick={() => { 
             concluido(id);
@@ -13,7 +16,7 @@ export default function Check(props){
     :
     (
         <Checked onClick={() => { 
-            concluido(id); 
+            desmarcar(id);
             }}>
             <ion-icon name="checkmark-outline"></ion-icon>
         </Checked>

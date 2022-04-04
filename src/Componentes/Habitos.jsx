@@ -11,12 +11,10 @@ import PorcentagemContext from "../Contexts/Porcentagem";
 
 export default function Habitos() {
     const [habitos, setHabitos] = useState([]);
-    const {numeroHabitos, setNumeroHabitos} = useContext(PorcentagemContext);
     const [nome, setNome] = useState("");
     const [add, setAdd] = useState(false);
     const { token } = useContext(TokenContext);
     const semana = ["D", "S", "T", "Q", "Q", "S", "S"];
-    // const [days, setDays] = useState([]);
     const [dias, setDias] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -47,7 +45,6 @@ export default function Habitos() {
             setHabitos([...habitos,resposta.data]);
             setNome("");
             setAdd(false);
-            setNumeroHabitos(numeroHabitos + 1);
             setLoading(false);
         });
         promessa.catch(err => {
@@ -69,8 +66,6 @@ export default function Habitos() {
         const promise = axios.get(URL, config);
         promise.then(resposta => {
             setHabitos(resposta.data);
-            setNumeroHabitos(habitos.length);
-            // setDays(resposta.data);
         })
     }, [token,habitos.length]);
 
@@ -89,7 +84,6 @@ export default function Habitos() {
         const exclui = axios.delete(URL, config);
         exclui.then(resposta => {
             setHabitos([...atualizaHabitos]);
-            setNumeroHabitos(numeroHabitos - 1);
         })
     }
 

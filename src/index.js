@@ -16,7 +16,7 @@ import PorcentagemContext from "./Contexts/Porcentagem";
 function App() {
     const [token, setToken] = useState(null);
     const [foto, setFoto] = useState(null);
-    const [numeroHabitos, setNumeroHabitos] = useState(null);
+    const [porcentagem, setPorcentagem] = useState(null);
 
     return (
         <>
@@ -24,7 +24,7 @@ function App() {
                 <GlobalStyle />
                 <TokenContext.Provider value={{ token, setToken }}>
                     <FotoContext.Provider value={{ foto, setFoto }}>
-                        <PorcentagemContext.Provider value={{ numeroHabitos, setNumeroHabitos }}>
+                        <PorcentagemContext.Provider value={{ porcentagem, setPorcentagem }}>
                             <Routes>
                                 <Route path="/" element={<Login salvarToken={(token) => setToken(token)} />} />
                                 <Route path="/cadastro" element={<Cadastro />} />
