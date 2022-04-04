@@ -22,12 +22,9 @@ export default function Hoje() {
     }
 
     function atualizaOProgresso(quantidadeDeHabitos) {
-        console.log(quantidadeDeHabitos);
         if (quantidadeDeHabitos.length > 0) {
-            console.log('entrei');
             const newArr = quantidadeDeHabitos.filter(habito => habito.done !== false).map(habito => habito.id);
             setConcluidos([...newArr]);
-            console.log(concluidos);
             let percent = (((newArr.length) / quantidadeDeHabitos.length) * 100).toFixed();
             setPorcentagem(percent);
         }
